@@ -33,7 +33,11 @@ export async function processImage(imageUrl: string, task: 'caption' | 'analyze'
         prompt: imageUrl,
         size: '1024x1024',
       });
-      return { modality: 'image', task, result: response.data[0].url };
+      const generatedImageUrl = response.data?.[0]?.url;
+      if (!generatedImageUrl) {
+        throw new Error('Image generation returned no image URL.');
+      }
+      return { modality: 'image', task, result: generatedImageUrl };
     }
 
     const response = await openai.chat.completions.create({
